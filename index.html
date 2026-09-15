@@ -2,123 +2,144 @@
 <html lang="zh-TW">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 加入 maximum-scale=1.0 防止意外的手指縮放 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>入校登記表</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
       background-color: #faf9f6; 
       color: #333;
+      -webkit-tap-highlight-color: transparent; /* 移除手機點擊時的閃爍黑影 */
+    }
+    /* 針對 select 的箭頭做一點美化，因為加了 appearance-none */
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      padding-right: 2.5rem;
     }
   </style>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body class="flex items-center justify-center min-h-screen p-4 sm:p-6">
 
-  <div class="bg-white border-2 border-gray-100 rounded-2xl shadow-sm w-full max-w-md p-8">
-    <h1 class="text-2xl font-bold text-center mb-6 text-gray-700 tracking-wide">入校登記</h1>
+  <!-- 手機版 p-6，平板以上 p-8 -->
+  <div class="bg-white border sm:border-2 border-gray-100 rounded-2xl shadow-sm w-full max-w-md p-6 sm:p-8">
+    <h1 class="text-2xl font-bold text-center mb-6 text-gray-700 tracking-wide">志工入校登記</h1>
     
-    <form id="checkInForm" class="space-y-6">
+    <form id="checkInForm" class="space-y-5">
       <!-- 1. 入校時間 -->
       <div>
         <label for="entryTime" class="block text-sm font-medium text-gray-600 mb-1.5">入校時間</label>
-        <!-- 注意：name="entryTime" 不能改中文 -->
+        <!-- text-base 確保手機不 zoom in，py-3 加大觸控高度 -->
         <input type="datetime-local" id="entryTime" name="entryTime" required
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700">
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700 text-base bg-white">
       </div>
 
       <!-- 2. 姓名 -->
       <div>
         <label for="name" class="block text-sm font-medium text-gray-600 mb-1.5">姓名</label>
-        <!-- 注意：name="name" 不能改中文 -->
-        <input type="text" id="name" name="name" placeholder="請輸入姓名" required
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700">
+        <input type="text" id="name" name="name" list="volunteerList" placeholder="請輸入或選擇姓名" required autocomplete="off"
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700 text-base bg-white appearance-none">
+        <datalist id="volunteerList"></datalist>
       </div>
 
       <!-- 3. 組別選填 -->
       <div>
         <label for="group" class="block text-sm font-medium text-gray-600 mb-1.5">組別</label>
-        <!-- 注意：name="group" 不能改中文 -->
         <select id="group" name="group" required
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors bg-white text-gray-700">
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors bg-white text-gray-700 text-base appearance-none">
           <option value="" disabled selected>請選擇組別</option>
-          <option value="幹部">幹部</option>
-          <option value="交通導護組">交通導護組</option>
-          <option value="安全照護組">安全照護組</option>
-          <option value="數學輔導組">數學輔導組</option>
-          <option value="國語輔導組">國語輔導組</option>
-          <option value="英語輔導組">英語輔導組</option>
-          <option value="健康服務組">健康服務組</option>
-          <option value="圖書組">圖書組</option>
-          <option value="熊熊輔導組">熊熊輔導組</option>
-          <option value="園藝組">園藝組</option>
-          <option value="生活媽媽組">生活媽媽組</option>
-          <option value="資訊美編組">資訊美編組</option>
-          <option value="人資組">人資組</option>
-          <option value="茶藝組">茶藝組</option>
         </select>
       </div>
 
-      <!-- 4. 入校原因 (動態連動) -->
+      <!-- 4. 入校原因 -->
       <div>
         <label for="reason" class="block text-sm font-medium text-gray-600 mb-1.5">入校原因</label>
-        <!-- 注意：name="reason" 不能改中文 -->
         <select id="reason" name="reason" required
-          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors bg-white text-gray-700">
+          class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors bg-white text-gray-700 text-base appearance-none">
           <option value="" disabled selected>請先選擇上方的「組別」</option>
         </select>
         
-        <!-- 其他原因輸入框 -->
         <input type="text" id="otherReason" name="otherReason" placeholder="請填寫具體原因" 
-          class="hidden w-full mt-2 px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700">
+          class="hidden w-full mt-3 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700 text-base bg-white">
       </div>
 
-      <!-- 送出按鈕 -->
+      <!-- 送出按鈕：稍微加大 padding -->
       <button type="submit" 
-        class="w-full mt-2 bg-amber-200 hover:bg-amber-300 text-gray-800 font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 shadow-sm">
+        class="w-full mt-4 bg-amber-200 hover:bg-amber-300 text-gray-800 font-semibold text-lg py-3.5 px-4 rounded-xl transition-colors duration-200 shadow-sm active:scale-[0.98]">
         確認送出
       </button>
     </form>
   </div>
 
   <script>
-    function setCurrentTime() {
-      const now = new Date();
-      const year = now.getFullYear();
-      const month = String(now.getMonth() + 1).padStart(2, '0');
-      const day = String(now.getDate()).padStart(2, '0');
-      const hours = String(now.getHours()).padStart(2, '0');
-      const minutes = String(now.getMinutes()).padStart(2, '0');
-      document.getElementById('entryTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
-    }
-    document.addEventListener('DOMContentLoaded', setCurrentTime);
+    // --- 【資料區】志工名冊 ---
+    const volunteerData = {"彭怡如": ["國語輔導組", "英語輔導組"], "趙純敏": ["健康服務組"], "王依晴": ["資訊美編組", "圖書組", "安全照護組", "健康服務組"], "林俞君": ["茶藝組", "資訊美編組", "圖書組", "安全照護組"], "蕭仟翊": ["圖書組", "健康服務組"], "侯麗雪": ["國語輔導組", "安全照護組"], "何金敏": ["國語輔導組"], "王意𡝗": ["健康服務組"], "簡碧媚": ["國語輔導組"], "劉亭君": ["國語輔導組"], "陳曉萍": ["圖書組"], "楊芳宜": ["熊熊輔導組", "數學輔導組", "圖書組"], "朱韻芳": ["數學輔導組"], "曾鈺棋": ["數學輔導組"], "何惠萍": ["健康服務組", "圖書組", "安全照護組"], "謝宛玲": ["國語輔導組", "健康服務組", "熊熊輔導組"], "陳妍華": ["茶藝組", "圖書組"], "曾秋蓉": ["圖書組"], "陳怡秀": ["健康服務組"], "陳曉真": ["安全照護組"], "陳怡如": ["圖書組", "安全照護組"], "謝采璇": ["健康服務組"], "周家敏": ["國語輔導組", "英語輔導組", "數學輔導組", "圖書組"], "許馨尹": ["資訊美編組", "圖書組"], "黃珮娸": ["國語輔導組", "英語輔導組"], "徐曉萍": ["健康服務組", "安全照護組"], "楊美萍": ["交通導護組", "安全照護組", "生活媽媽組"], "賴美惠": ["數學輔導組", "國語輔導組"], "張秀如": ["圖書組", "健康服務組", "熊熊輔導組"], "洪玉芬": ["健康服務組"], "廖淑君": ["交通導護組", "國語輔導組", "健康服務組", "安全照護組"], "林佳慧": ["數學輔導組", "交通導護組", "國語輔導組", "健康服務組"], "楊文菁": ["健康服務組"], "周季虹": ["國語輔導組", "健康服務組"], "郭婉玲": ["國語輔導組"], "陳美玉": ["健康服務組", "圖書組"], "林怡君": ["圖書組"], "李秀玉": ["健康服務組", "圖書組"], "陳淑華": ["健康服務組", "圖書組"], "鄭美玲": ["圖書組"], "王瓊瑤": ["數學輔導組", "圖書組"], "高淑娟": ["國語輔導組", "圖書組", "安全照護組"], "陳玉娟": ["數學輔導組", "圖書組"], "林美玲": ["數學輔導組", "圖書組"], "林美雪": ["國語輔導組"], "王美惠": ["健康服務組"], "陳淑芬": ["健康服務組", "安全照護組"], "林淑娟": ["國語輔導組"], "陳淑玲": ["國語輔導組"], "陳麗華": ["國語輔導組"], "林麗雪": ["國語輔導組"], "陳淑惠": ["國語輔導組", "健康服務組"], "陳美玲": ["圖書組"], "陳玉琴": ["圖書組"], "林淑惠": ["圖書組"], "陳淑琴": ["圖書組"], "王麗華": ["圖書組", "安全照護組"], "陳美惠": ["圖書組"], "陳麗玲": ["圖書組"], "林美惠": ["圖書組"], "林淑芬": ["安全照護組", "生活媽媽組"], "陳麗雪": ["安全照護組"], "陳玉華": ["安全照護組"], "王淑惠": ["交通導護組"], "陳美雪": ["交通導護組"], "陳淑美": ["交通導護組"], "林玉娟": ["交通導護組"], "陳玉玲": ["交通導護組"], "陳淑娟": ["熊熊輔導組"], "林麗華": ["熊熊輔導組"], "林玉琴": ["熊熊輔導組"], "陳美娟": ["熊熊輔導組"], "陳玉美": ["熊熊輔導組"], "王淑娟": ["園藝組"], "陳麗美": ["園藝組"], "陳玉芬": ["園藝組"], "林淑美": ["園藝組"], "林麗美": ["園藝組"], "陳淑雪": ["資訊美編組"], "王美玲": ["資訊美編組"], "陳麗娟": ["資訊美編組"], "林美琴": ["人資組"], "陳美琴": ["人資組"], "林淑雪": ["人資組"], "林玉華": ["茶藝組"], "陳玉雪": ["茶藝組"], "王淑芬": ["茶藝組"], "陳美華": ["生活媽媽組"], "林玉玲": ["生活媽媽組"], "林麗娟": ["生活媽媽組"]};
 
+    const allGroups = ['交通導護組', '安全照護組', '數學輔導組', '國語輔導組', '英語輔導組', '健康服務組', '圖書組', '熊熊輔導組', '園藝組', '生活媽媽組', '資訊美編組', '人資組', '茶藝組'];
+
+    const nameInput = document.getElementById('name');
     const groupSelect = document.getElementById('group');
+    const datalist = document.getElementById('volunteerList');
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      const now = new Date();
+      const format = n => String(n).padStart(2, '0');
+      document.getElementById('entryTime').value = `${now.getFullYear()}-${format(now.getMonth() + 1)}-${format(now.getDate())}T${format(now.getHours())}:${format(now.getMinutes())}`;
+      
+      for (const name in volunteerData) {
+        const option = document.createElement('option');
+        option.value = name;
+        datalist.appendChild(option);
+      }
+      
+      renderGroupOptions(allGroups); 
+    });
+
+    function renderGroupOptions(groupsToShow) {
+      groupSelect.innerHTML = '<option value="" disabled selected>請選擇組別</option>';
+      const finalGroups = ['幹部', ...groupsToShow];
+      
+      finalGroups.forEach(g => {
+        const option = document.createElement('option');
+        option.value = g;
+        option.textContent = g;
+        groupSelect.appendChild(option);
+      });
+    }
+
+    nameInput.addEventListener('input', function() {
+      const inputName = this.value.trim();
+      const matchedGroups = volunteerData[inputName];
+
+      if (matchedGroups) {
+        renderGroupOptions(matchedGroups);
+        if (matchedGroups.length === 1) {
+          groupSelect.value = matchedGroups[0];
+          groupSelect.dispatchEvent(new Event('change')); 
+        }
+      } else {
+        renderGroupOptions(allGroups);
+        document.getElementById('reason').innerHTML = '<option value="" disabled selected>請先選擇上方的「組別」</option>';
+      }
+    });
+
     const reasonSelect = document.getElementById('reason');
     const otherReasonInput = document.getElementById('otherReason');
-
     const reasonMapping = {
       '幹部': ['幹部會議'],
-      '數學輔導組': ['課輔支援'],
-      '國語輔導組': ['課輔支援'],
-      '英語輔導組': ['課輔支援'],
-      '熊熊輔導組': ['課輔支援'],
-      '健康服務組': ['健康中心支援'],
-      '圖書組': ['圖書支援']
+      '數學輔導組': ['課輔支援'], '國語輔導組': ['課輔支援'], '英語輔導組': ['課輔支援'], '熊熊輔導組': ['課輔支援'],
+      '健康服務組': ['健康中心支援'], '圖書組': ['圖書支援']
     };
-    
     const allReasons = ['圖書支援', '課輔支援', '健康中心支援', '幹部會議', '活動支援', '其他'];
     const alwaysInclude = ['活動支援', '其他'];
 
     groupSelect.addEventListener('change', function() {
       const selectedGroup = this.value;
-      let optionsToShow = [];
-
-      if (reasonMapping[selectedGroup]) {
-        optionsToShow = [...new Set([...reasonMapping[selectedGroup], ...alwaysInclude])];
-      } else {
-        optionsToShow = allReasons;
-      }
-
+      let optionsToShow = reasonMapping[selectedGroup] ? [...new Set([...reasonMapping[selectedGroup], ...alwaysInclude])] : allReasons;
+      
       reasonSelect.innerHTML = '';
       optionsToShow.forEach(reason => {
         const option = document.createElement('option');
@@ -126,7 +147,6 @@
         option.textContent = reason;
         reasonSelect.appendChild(option);
       });
-
       reasonSelect.dispatchEvent(new Event('change'));
     });
 
@@ -143,7 +163,6 @@
 
     document.getElementById('checkInForm').addEventListener('submit', function(e) {
       e.preventDefault(); 
-      
       const form = e.target;
       const submitButton = form.querySelector('button[type="submit"]');
       const formData = new FormData(form);
@@ -152,22 +171,17 @@
         formData.set('reason', '其他：' + formData.get('otherReason'));
       }
 
-      // 👉 這裡已經更新為你最新提供的 API 網址！
       const scriptURL = 'https://script.google.com/macros/s/AKfycbz5tpBxvyeTF6P-C8KPjt8JvPdeVgjI3dEWVCySwXASTcAcKRr4eJfN0VsA-0H3wqy5fw/exec'; 
-
+      
       submitButton.disabled = true;
       submitButton.innerText = '資料傳送中...';
       submitButton.classList.add('opacity-50', 'cursor-not-allowed');
 
-      fetch(scriptURL, { 
-        method: 'POST', 
-        body: formData 
-      })
+      fetch(scriptURL, { method: 'POST', body: formData })
       .then(response => {
         alert('入校登記成功！');
         form.reset(); 
-        setCurrentTime(); 
-        reasonSelect.innerHTML = '<option value="" disabled selected>請先選擇上方的「組別」</option>';
+        document.dispatchEvent(new Event('DOMContentLoaded')); 
         otherReasonInput.classList.add('hidden');
       })
       .catch(error => {
