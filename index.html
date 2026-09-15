@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>入校登記表</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #faf9f6; 
+      color: #333;
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+  <div class="bg-white border-2 border-gray-100 rounded-2xl shadow-sm w-full max-w-md p-8">
+    <h1 class="text-2xl font-bold text-center mb-6 text-gray-700 tracking-wide">入校登記</h1>
+    
+    <form id="checkInForm" class="space-y-6">
+      <!-- 1. 入校時間 -->
+      <div>
+        <label for="entryTime" class="block text-sm font-medium text-gray-600 mb-1.5">入校時間</label>
+        <!-- 注意：name="entryTime" 不能改中文 -->
+        <input type="datetime-local" id="entryTime" name="entryTime" required
+          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700">
+      </div>
+
+      <!-- 2. 姓名 -->
+      <div>
+        <label for="name" class="block text-sm font-medium text-gray-600 mb-1.5">姓名</label>
+        <!-- 注意：name="name" 不能改中文 -->
+        <input type="text" id="name" name="name" placeholder="請輸入姓名" required
+          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700">
+      </div>
+
+      <!-- 3. 組別選填 -->
+      <div>
+        <label for="group" class="block text-sm font-medium text-gray-600 mb-1.5">組別</label>
+        <!-- 注意：name="group" 不能改中文 -->
+        <select id="group" name="group" required
+          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors bg-white text-gray-700">
+          <option value="" disabled selected>請選擇組別</option>
+          <option value="幹部">幹部</option>
+          <option value="交通導護組">交通導護組</option>
+          <option value="安全照護組">安全照護組</option>
+          <option value="數學輔導組">數學輔導組</option>
+          <option value="國語輔導組">國語輔導組</option>
+          <option value="英語輔導組">英語輔導組</option>
+          <option value="健康服務組">健康服務組</option>
+          <option value="圖書組">圖書組</option>
+          <option value="熊熊輔導組">熊熊輔導組</option>
+          <option value="園藝組">園藝組</option>
+          <option value="生活媽媽組">生活媽媽組</option>
+          <option value="資訊美編組">資訊美編組</option>
+          <option value="人資組">人資組</option>
+          <option value="茶藝組">茶藝組</option>
+        </select>
+      </div>
+
+      <!-- 4. 入校原因 (動態連動) -->
+      <div>
+        <label for="reason" class="block text-sm font-medium text-gray-600 mb-1.5">入校原因</label>
+        <!-- 注意：name="reason" 不能改中文 -->
+        <select id="reason" name="reason" required
+          class="w-full px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors bg-white text-gray-700">
+          <option value="" disabled selected>請先選擇上方的「組別」</option>
+        </select>
+        
+        <!-- 其他原因輸入框 -->
+        <input type="text" id="otherReason" name="otherReason" placeholder="請填寫具體原因" 
+          class="hidden w-full mt-2 px-4 py-2.5 border border-gray-200 rounded-lg focus:ring-2 focus:ring-amber-100 focus:border-amber-300 outline-none transition-colors text-gray-700">
+      </div>
+
+      <!-- 送出按鈕 -->
+      <button type="submit" 
+        class="w-full mt-2 bg-amber-200 hover:bg-amber-300 text-gray-800 font-semibold py-2.5 px-4 rounded-lg transition-colors duration-200 shadow-sm">
+        確認送出
+      </button>
+    </form>
+  </div>
+
+  <script>
+    function setCurrentTime() {
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const day = String(now.getDate()).padStart(2, '0');
+      const hours = String(now.getHours()).padStart(2, '0');
+      const minutes = String(now.getMinutes()).padStart(2, '0');
+      document.getElementById('entryTime').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+    }
+    document.addEventListener('DOMContentLoaded', setCurrentTime);
+
+    const groupSelect = document.getElementById('group');
+    const reasonSelect = document.getElementById('reason');
+    const otherReasonInput = document.getElementById('otherReason');
+
+    const reasonMapping = {
+      '幹部': ['幹部會議'],
+      '數學輔導組': ['課輔支援'],
+      '國語輔導組': ['課輔支援'],
+      '英語輔導組': ['課輔支援'],
+      '熊熊輔導組': ['課輔支援'],
+      '健康服務組': ['健康中心支援'],
+      '圖書組': ['圖書支援']
+    };
+    
+    const allReasons = ['圖書支援', '課輔支援', '健康中心支援', '幹部會議', '活動支援', '其他'];
+    const alwaysInclude = ['活動支援', '其他'];
+
+    groupSelect.addEventListener('change', function() {
+      const selectedGroup = this.value;
+      let optionsToShow = [];
+
+      if (reasonMapping[selectedGroup]) {
+        optionsToShow = [...new Set([...reasonMapping[selectedGroup], ...alwaysInclude])];
+      } else {
+        optionsToShow = allReasons;
+      }
+
+      reasonSelect.innerHTML = '';
+      optionsToShow.forEach(reason => {
+        const option = document.createElement('option');
+        option.value = reason;
+        option.textContent = reason;
+        reasonSelect.appendChild(option);
+      });
+
+      reasonSelect.dispatchEvent(new Event('change'));
+    });
+
+    reasonSelect.addEventListener('change', function() {
+      if (this.value === '其他') {
+        otherReasonInput.classList.remove('hidden');
+        otherReasonInput.required = true; 
+      } else {
+        otherReasonInput.classList.add('hidden');
+        otherReasonInput.required = false;
+        otherReasonInput.value = ''; 
+      }
+    });
+
+    document.getElementById('checkInForm').addEventListener('submit', function(e) {
+      e.preventDefault(); 
+      
+      const form = e.target;
+      const submitButton = form.querySelector('button[type="submit"]');
+      const formData = new FormData(form);
+      
+      if (formData.get('reason') === '其他') {
+        formData.set('reason', '其他：' + formData.get('otherReason'));
+      }
+
+      // 👉 這裡已經更新為你最新提供的 API 網址！
+      const scriptURL = 'https://script.google.com/macros/s/AKfycbz5tpBxvyeTF6P-C8KPjt8JvPdeVgjI3dEWVCySwXASTcAcKRr4eJfN0VsA-0H3wqy5fw/exec'; 
+
+      submitButton.disabled = true;
+      submitButton.innerText = '資料傳送中...';
+      submitButton.classList.add('opacity-50', 'cursor-not-allowed');
+
+      fetch(scriptURL, { 
+        method: 'POST', 
+        body: formData 
+      })
+      .then(response => {
+        alert('入校登記成功！');
+        form.reset(); 
+        setCurrentTime(); 
+        reasonSelect.innerHTML = '<option value="" disabled selected>請先選擇上方的「組別」</option>';
+        otherReasonInput.classList.add('hidden');
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+        alert('發生錯誤，請檢查網路連線後再試一次。');
+      })
+      .finally(() => {
+        submitButton.disabled = false;
+        submitButton.innerText = '確認送出';
+        submitButton.classList.remove('opacity-50', 'cursor-not-allowed');
+      });
+    });
+  </script>
+</body>
+</html>
