@@ -28,7 +28,10 @@
 <body class="flex items-center justify-center min-h-screen p-4 sm:p-6">
 
   <div class="bg-white border sm:border-2 border-gray-100 rounded-2xl shadow-sm w-full max-w-md p-6 sm:p-8">
-    <h1 class="text-2xl font-bold text-center mb-6 text-gray-700 tracking-wide">志工入校登記</h1>
+    <div class="text-center mb-5">
+      <img src="胡適國小志工團標準字.png" alt="胡適國小志工團" class="w-full max-w-[280px] sm:max-w-[320px] mx-auto mb-3 h-auto object-contain">
+      <h1 class="text-2xl font-bold text-gray-700 tracking-wide">志工入校登記</h1>
+    </div>
     
     <form id="checkInForm" class="space-y-5">
       <!-- 1. 入校時間 (已修復超出版面問題) -->
@@ -73,6 +76,9 @@
         確認送出
       </button>
     </form>
+
+    <!-- 下方告示 -->
+    <p class="text-xs text-center text-gray-400 mt-5 tracking-wider">*入校登記僅供志工團存檔備查*</p>
   </div>
 
   <script>
